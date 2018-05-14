@@ -7,11 +7,6 @@ import ast
 
 DNN = False
 
-
-
-parser = argparse.ArgumentParser()
-parser.add_argument('--dnn', default=0, type=int, help='lr or dnn')
-
 data = pd.read_csv("tmdb_5000_movies.csv")
 
 numericaldata = data[['budget', 'popularity', 'revenue', 'runtime', 'vote_count']]
@@ -27,7 +22,7 @@ numericaldata = pd.concat([numericaldata, timedata], axis=1)
 genres = {}
 for line in data['genres']:
     for gen in ast.literal_eval(line):
-        genres[gen['id']] = gen['name']
+        genres[gen['id']] = gen['name'].replace(" ", "")
 
 gendata = pd.DataFrame(columns=genres.values(), index=data.index.tolist())
 j = 0
@@ -35,7 +30,7 @@ for line in data['genres']:
     vect = list(genres.keys())
     genr = {}
     for gen in ast.literal_eval(line):
-        genr[gen['id']] = gen['name']
+        genr[gen['id']] = gen['name'].replace(" ", "")
     for i in range(0, len(vect)):
         if vect[i] in genr.keys():
             vect[i] = 1
@@ -44,7 +39,7 @@ for line in data['genres']:
     gendata.iloc[j] = vect
     j += 1
 
-gendata = gendata.rename(columns={'Science Fiction': 'Science_Fiction', 'TV Movie': 'TV_Movie'})
+# gendata = gendata.rename(columns={'Science Fiction': 'Science_Fiction', 'TV Movie': 'TV_Movie'})
 
 numericaldata = pd.concat([numericaldata, gendata], axis=1)
 

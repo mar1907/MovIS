@@ -3,9 +3,9 @@ import tensorflow as tf
 
 COLUMNS = ['budget', 'popularity', 'revenue', 'runtime',
            'vote_count', 'release_date', 'Action', 'Adventure', 'Fantasy',
-           'Science_Fiction', 'Crime', 'Drama', 'Thriller', 'Animation', 'Family',
+           'ScienceFiction', 'Crime', 'Drama', 'Thriller', 'Animation', 'Family',
            'Western', 'Comedy', 'Romance', 'Horror', 'Mystery', 'History', 'War',
-           'Music', 'Documentary', 'Foreign', 'TV_Movie', 'vote_average']
+           'Music', 'Documentary', 'Foreign', 'TVMovie', 'vote_average']
 
 
 def load_data():
