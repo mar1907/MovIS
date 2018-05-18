@@ -7,18 +7,18 @@ COLUMNS = ['budget', 'popularity', 'revenue', 'runtime',
            'vote_count', 'release_date', 'Action', 'Adventure', 'Fantasy',
            'ScienceFiction', 'Crime', 'Drama', 'Thriller', 'Animation', 'Family',
            'Western', 'Comedy', 'Romance', 'Horror', 'Mystery', 'History', 'War',
-           'Music', 'Documentary', 'Foreign', 'TVMovie', 'vote_average']
+           'Music', 'Rating']
 
 
 def load_data():
-    train = pd.read_csv("scaled_movies_train.csv", names=COLUMNS, header=0)
-    train_x, train_y = train, train.pop('vote_average')
+    train = pd.read_csv("correlated_movies_train.csv", names=COLUMNS, header=0)
+    train_x, train_y = train, train.pop('Rating')
 
-    validate = pd.read_csv("scaled_movies_validate.csv")
-    validate_x, validate_y = validate, validate.pop('vote_average')
+    validate = pd.read_csv("correlated_movies_validate.csv")
+    validate_x, validate_y = validate, validate.pop('Rating')
 
-    test = pd.read_csv("scaled_movies_test.csv")
-    test_x, test_y = test, test.pop('vote_average')
+    test = pd.read_csv("correlated_movies_test.csv")
+    test_x, test_y = test, test.pop('Rating')
 
     return (train_x, train_y), (validate_x, validate_y), (train_x, test_y)
 

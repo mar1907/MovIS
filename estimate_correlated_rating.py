@@ -5,20 +5,20 @@ from __future__ import print_function
 import tensorflow as tf
 import argparse
 
-import movie_data
+import correlated_movie_data
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--batch_size', default=100, type=int, help='batch size')
 parser.add_argument('--train_steps', default=1000, type=int,
                     help='number of training steps')
 
-DNN = movie_data.DNN
+DNN = correlated_movie_data.DNN
 
 
 def main(argv):
     args = parser.parse_args(argv[1:])
 
-    (train_x, train_y), (validate_x, validate_y), (test_x, test_y) = movie_data.load_data()
+    (train_x, train_y), (validate_x, validate_y), (test_x, test_y) = correlated_movie_data.load_data()
 
     my_feature_columns = []
     for key in train_x.keys():
@@ -37,13 +37,13 @@ def main(argv):
         )
 
     predictor.train(
-        input_fn=lambda: movie_data.train_input_fn(train_x, train_y,
+        input_fn=lambda: correlated_movie_data.train_input_fn(train_x, train_y,
                                                    args.batch_size),
         steps=args.train_steps
     )
 
     eval_result = predictor.evaluate(
-        input_fn=lambda: movie_data.eval_input_fn(validate_x, validate_y,
+        input_fn=lambda: correlated_movie_data.eval_input_fn(validate_x, validate_y,
                                                   args.batch_size)
     )
 

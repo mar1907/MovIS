@@ -1,14 +1,32 @@
-import argparse
-import pandas as pd
-from datetime import datetime
-import tensorflow as tf
 import ast
-import movie_data
+from datetime import datetime
 
-DNN = movie_data.DNN
+import pandas as pd
 
-# get data
-data = pd.read_csv("tmdb_5000_movies.csv")
+import correlated_movie_data
+
+tdata = pd.read_csv("tmdb_5000_movies.csv")
+
+idata = pd.read_csv("IMDB-Movie-Data.csv")
+idata = pd.concat([idata['Title'], idata['Rating']], axis=1)
+
+titles = tdata['original_title'].str
+
+returndata = pd.DataFrame(columns=['Title', 'Rating'])
+
+for index, row in idata.iterrows():
+    if titles.contains(row['Title']).any():
+        returndata = returndata.append(row)
+
+tdata = tdata.rename(columns={'original_title': 'Title'})
+tdata = tdata.loc[tdata['Title'].isin(idata['Title'])]
+tdata = pd.merge(tdata, idata, on='Title')
+
+tdata.to_csv("correlated_movies.csv")
+
+data = tdata
+
+DNN = correlated_movie_data.DNN
 
 # separate numerical data
 numericaldata = data[['budget', 'popularity', 'revenue', 'runtime', 'vote_count']]
@@ -57,10 +75,12 @@ numericaldata = numericaldata + epsilon
 
 # add the feature to be predicted
 if DNN:
-    ratingdata = data['vote_average'].round(0).astype(int)  # dnn classifier
+    # ratingdata = data['vote_average'].round(0).astype(int)  # dnn classifier
+    ratingdata2 = data['Rating'].round(0).astype(int)  # dnn classifier
 else:
-    ratingdata = data['vote_average']   # linear regression
-numericaldata = pd.concat([numericaldata, ratingdata], axis=1)
+    # ratingdata = data['vote_average']   # linear regression
+    ratingdata2 = data['Rating']  # linear regression
+numericaldata = pd.concat([numericaldata, ratingdata2], axis=1)
 
 
 # replace nan's
@@ -70,6 +90,7 @@ numericaldata = numericaldata.fillna(1e-8)
 numericaldata = numericaldata.sample(frac=1)
 
 # save data
-numericaldata[:4000].to_csv("scaled_movies_train.csv", encoding="utf-8")
-numericaldata[4001:].to_csv("scaled_movies_validate.csv", encoding="utf-8")
-numericaldata[4001:].to_csv("scaled_movies_test.csv", encoding="utf-8")
+count = int(4*numericaldata['Rating'].count()/5)
+numericaldata[:count].to_csv("correlated_movies_train.csv", encoding="utf-8")
+numericaldata[count:].to_csv("correlated_movies_validate.csv", encoding="utf-8")
+numericaldata[count:].to_csv("correlated_movies_test.csv", encoding="utf-8")
